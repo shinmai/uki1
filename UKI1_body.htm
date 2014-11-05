@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+<title>UKI (USB Key Injector)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+
+body {
+  margin-left: 30px;
+  background-color:#CCCCCC;
+  font-family: Sans-serif;
+  font-size:1.1em;
+}
+
+-->
+</style>
+</head>
+
+<body>
+
+
+<br>
+<p align="center"><img src="uki_v102.jpg" width="50%"></p>
+<h2>UKI (USB Key Injector)</h2>
+<p>
+The UKI (USB Key Injector) is an open-source (GPL) device that uses the USB HID interface (which is built into many operating systems) to inject keystrokes into a computer or device while it's running, without an actual keyboard. It uses an attiny85 processor and an optional 64k byte serial EEPROM. The scripts can be re-uploaded without having to reflash any firmware.
+</p><p>
+The project features the hardware designs and firmware, as well as functional script upload programs in Windows C, MASM and Linux GCC.
+</p><p>
+The UKI harware can be used in many ways:<br>
+Using uploadable EEPROM-stored scancode injection scripts, you can use the device for pentests, for practical jokes/impressing people, or just for hitting the same keys so you don't have to keep doing it over and over yourself. You can script in most scancodes (and some non-standards keys as well), many different delays, USB device disconnection, jumps and loops. Examples: Storing a second half of a typed in password that included a large amount of random letters, numbers and symbols to implement a form of two-factor authentication on systems or programs lacking multi-factor auth built in - something easy to script on a UKI but impossible to remember and difficult to write down. You can script in a delay, then the codes to open the run menu, ftp to an site, download a file, execute the file, then quit the command prompt and disconnect. Or use explorer to connect to an SMB share or a website that houses your files. Use it to upload hex data to a machine without drive access. You could have it run explorer and go to a specfic site every 30 minutes. It could hit shift, ctrl, or alt in intervals and repeat to infuriate someone. You could set it for a 5 minute delay, then plug it in without being noticed and (assuming you time the scripts right) you could "command" the computer to do something while someone else was sitting at it. Or you can use it to upload stored binary data and (if it's an executable or script) run it. Or have it run advertising banners or animation by entering text into notepad.<br>
+With the direct key input, you can use another program running on the computer to input data to the virtual keyboard seamlessly - which lets you script keystrokes in programs that you may not normally be able to. Since many games will intentionally block key input from other programs, using it, you can write a program to track key input and pump keys into the keystroke buffer on queue, thus bypassing the key protection. The source code is available to do this using the example code in the UKI Controller program. The Windows C version also includes a DLL, lib and header that can be used for key injection using the UKI in your own programs. The current linux version detaches the HID Keyboard collection when the second collection is opened, due to how it's locked, but the interface is still there, if a different connection method is used that doesn't detach the keyboard collection.
+</p><p>
+The hardware is extremely simple and can be constructed by anyone that is familiar with electronics, of varying skill levels. Even more so if you choose to omit the EEPROM and programming header. The schematics and PCB image are included, as well as the firmware and source. If you are not comfortable or do not have hardware to program the processor yourself, I offer preprogrammed processors for a small fee above the unit price. If you are not familiar with using photo/laser transfer and etching your own boards, you can order them online also. Almost everything can be picked up from your local electronics store, but if you can't find something, you can order the whole kit on this site via Paypal, for delivery to you in the US via USPS Flat Rate Priority Mail with delivery confirmation. (Average 2-3 day delivery to most places.) I am still working on offering other shipping methods.
+</p><p>
+The software source that is offered is all open-source, licensed under the GPL. You can use or modify it freely as allowed by the GPL. I have included 3 different sets of the example programming interface for compiling scripts to upload to the device. One using MS VS2010, one with MASM, and the remaining in GCC. You can take the code and should be able integrate it into most any other GPL program. (Or use the injection DLL in any program.)
+</p><p>
+The firmware (which is also open-source) uses the <a href="/web/20130922050044/http://www.obdev.at/products/vusb/index.html">vUSB library from OBDEV</a> (which is also released under the GPL) for the USB interface, which saves having extra hardware conversion for the USB connection. It uses the onboard PLL clock input of the processor, so it also doesn't need an external clock crystal. Due to pin usage, I implemented a custom two wire software serial EEPROM driver (although it does exploit the built in shift register) to use a non-standard SCL clock pin for serial EEPROM communication. You can use it with or without the additional EEPROM, it will detect and use it if it's available. It's coded to use the base 512 bytes plus up to 64k of external EEPROM, but adding the ability to use larger or more pages of EEPROM is not difficult.
+</p><p>
+The EEPROM upload is not fast, but it works. It's set up as a dual top level collection multi-function HID device, one that gets captured by the OS for keyboard input, and the second which doesn't get captured (on Windows) which allows configuration, control and EEPROM programming. It requires no special drivers (besides the ones built in to the OS) on the system in order to work, thanks to the HID driver. However, you do need the respective libraries to access the OS's HID implementation (The Windows DDK or libhid library). See the respective source code for more info.
+</p>
+<br>
+
+&copy;2010 NOP Security<br>
+</body>
+</html>

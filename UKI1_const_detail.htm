@@ -1,0 +1,74 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+
+<title>UKI Contstruction Notes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+
+body {
+  margin-left: 30px;
+  background-color:#CCCCCC;
+  font-family: Sans-serif;
+  font-size:1em;
+}
+
+div#details br {
+  margin-bottom: 0.75em;
+}
+
+
+.deadlink {
+	text-decoration: line-through;
+	color: red;
+	border-bottom: dashed red 1px;
+}
+-->
+</style></head>
+
+<body>
+<h3>Construction Notes:<br></h3>
+What is needed:<br>
+
+<table border=2>
+<tr><td align="right">1</td><td> ATTiny85 processor</td></tr>
+<tr><td align="right"> </td><td>single sided PCB of any weight and means to etch and drill (premade board already in kit)</td></tr>
+<tr height=5></tr>
+<tr><td align="right">1</td><td>24FC512 64k byte EEPROM (optional, but preferred)</td></tr>
+<tr height=5></tr>
+<tr><td align="right">2</td><td>diodes (4148 or similar)</td></tr>
+<tr><td align="right">2</td><td>~10k ohm resistors (10k in kit)</td></tr>
+<tr><td align="right">2</td><td>~68 ohm resistors (51 in kit)</td></tr>
+<tr><td align="right">1</td><td>~1Meg ohm resistor (1Meg in kit)</td></tr>
+<tr><td align="right">1</td><td>~1.5k ohm resistor (1.5k in kit)</td></tr>
+<tr><td align="right">1</td><td>0.01uf or larger capacitor (0.01 uf in kit)</td></tr>
+<tr><td align="right">1</td><td>USB A connector or a 4 pin header</td></tr>
+</table>
+Most part values are flexible, they just need to be relatively close to specs.<br><br>
+
+<div id="details">
+<p>Construction details:</p>
+<p>
+If you ordered a kit: Skip past the board construction info.<br>
+If you are etching your own board by toner transfer: <span class="deadlink" title="Dead link">Click here for toner transfer instructions.</span><br>
+For any other transfer method, if you have it, you probably know how to do it already.<br>
+</p><p>
+Once the board is ready, if you are connecting the USB connector directly to the board, solder that in first. You can use that to clamp to. If you are using a 4-pin header it's optional, and if you are soldering wires from a cable or alligator clips, then it's easiest to save that till last so you don't get tangled.<br>
+When soldering, it is easiest to heat up the component lead that sticks through the hole and melt the solder to that, rather than trying to melt the solder with the soldering iron directly. You can hold the solder against the lead while you apply heat, and it will melt as soon as there is enough heat reaching it. It also stops the solder from adhereing to the soldering iron and extends tip life.<br>
+Then solder everything else in, starting with the non-ICs first and then end with the chips. It is easier if you solder only one side of the resistors that share a pin side with the processor chip until you are ready to do the chip as well. Then you can solder both pins at the same time, and you don't have to worry about the solder covering up an empty hole.<br>
+Pay attention to the direction of the diodes and the chips, and view the board image on the website if you have any questions on the orientation of the parts.<br>
+The 6-pin header is needed if you make your own board and plan to program the processor yourself. The kit boards do not need this soldered in as the holes are through-plated - all you need to do to make the connection is to insert pins into the programming connector and slide it into the header holes. As long as it is snug, there will be enough connection to program it.<br>
+</p><p>
+Once the hardware is ready, connect the programming connector to the 6-pin header and use the software for your programmer to flash the firmware and set the fuses.<br>
+If your programmer does not supply power to the device, you will need to either supply 5v to the USB +V and Gnd lines, or cut the D+ and D- out of a cable and make a power supply cable to get power to the device which you can connect to a computer for power while programming. You cannot use an unmodified cable as the D+ and D- lines of the USB are connected to the same pins that the programmer needs to use for the serial programming communication.<br>
+<br>
+Once complete, you can plug your UKI into your computer and begin uploading scripts!<br>
+</p>
+</div>
+<br>
+<br>
+&copy;2010 NOP Security<br>
+</body>
+</html>

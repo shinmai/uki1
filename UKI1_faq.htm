@@ -1,0 +1,170 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<title>FAQ and Troubleshooting</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+
+body {
+  margin-left: 30px;
+  background-color:#CCCCCC;
+  font-family: Sans-serif;
+  font-size:1.1em;
+}
+
+-->
+</style>
+</head>
+
+<body>
+
+
+
+<br>
+<h2>UKI Frequently Asked Questions/Troubleshooting</h2><br>
+<br>
+<a href="#q_1">What is the USB Key Injector?</a><br>
+<a href="#q_2">Why would I use it?</a><br>
+<a href="#q_3">How does the UKI work?</a><br>
+<a href="#q_4">How is the UKI used?</a><br>
+<a href="#q_5">What is UKIController?</a><br>
+<a href="#q_6">How do I write a script?</a><br>
+<a href="#q_7">Why did you make this?</a><br>
+<a href="#q_8">Why do you sell the parts?</a><br>
+<a href="#q_9">Do I need to purchase the parts from you?</a><br>
+<a href="#q_10">I have put it together but it doesn't work!</a><br>
+<a href="#q_11">I cannot connect to the device!</a><br>
+<a href="#q_12">EEPROM upload fails!</a><br>
+<a href="#q_13">Nothing happens when I try to run scripts!</a><br>
+<a href="#q_14">I programmed a disconnect as the first script command and now I can't connect to the device to reprogram it!</a><br>
+<a href="#q_15">Why should I use disconnects and connects?</a><br>
+<a href="#q_16">How do I encode files for transfer?</a><br>
+<a href="#q_17">Can you run binary data from it?</a><br>
+<a href="#q_18">Why don't the UKI Control programs have the same capabilities?</a><br>
+<a href="#q_19">Why would I change the VID/PID pair, Serial or other ID info in the firmware?</a><br>
+<a href="#q_20">How does it connect to a computer?</a><br>
+<a href="#q_21">How do I power the chip to program the firmware with the 6-pin header?</a><br>
+<a href="#q_22">How do I store data to the external EEPROM?</a><br>
+<a href="#q_23">Do you have any tips for soldering?</a><br>
+<a href="#q_other">I have other questions!</a><br>
+<a href="#q_thanks">Thanks/Credit</a><br>
+<br>
+<h3><a name="q_1"></a>
+What is the USB Key Injector?
+</h3><p>
+The UKI (USB Key Injector) is an open-source (GPL) device that uses the USB HID interface (which is built into many operating systems) to inject keystrokes into a computer or device while it's running, without an actual keyboard. It uses an attiny85 processor and an optional 64k byte serial EEPROM. The scripts can be re-uploaded without having to reflash any firmware.
+</p><h3><a name="q_2"></a>
+Why would I use it?
+</h3><p>
+Using uploadable EEPROM-stored scancode injection scripts, you can use the device for pentests, for practical jokes/impressing people, or just for hitting the same keys so you don't have to keep doing it over and over yourself. You can script in most scancodes (and some non-standards keys as well), many different delays, USB device disconnection, jumps and loops. Examples: Storing a second half of a typed in password that included a large amount of random letters, numbers and symbols to implement a form of two-factor authentication on systems or programs lacking multi-factor auth built in - something easy to script on a UKI but impossible to remember and difficult to write down. You can script in a delay, then the codes to open the run menu, ftp to an site, download a file, execute the file, then quit the command prompt and disconnect. Or use explorer to connect to an SMB share or a website that houses your files. Use it to upload hex data to a machine without drive access. You could have it run explorer and go to a specfic site every 30 minutes. It could hit shift, ctrl, or alt in intervals and repeat to infuriate someone. You could set it for a 5 minute delay, then plug it in without being noticed and (assuming you time the scripts right) you could "command" the computer to do something while someone else was sitting at it. Or you can use it to upload stored binary data and (if it's an executable or script) run it. Or have it run advertising banners or animation by entering text into notepad.<br>
+With the direct key input, you can use another program running on the computer to input data to the virtual keyboard seamlessly - which lets you script keystrokes in programs that you may not normally be able to. Since many games will intentionally block key input from other programs, using it, you can write a program to track key input and pump keys into the keystroke buffer on queue, thus bypassing the key protection. The source code is available to do this using the example code in the UKI Controller program. The Windows C version also includes a DLL, lib and header that can be used for key injection using the UKI in your own programs. The current linux version detaches the HID Keyboard collection when the second collection is opened, due to how it's locked, but the interface is still there, if a different connection method is used that doesn't detach the keyboard collection.
+</p><h3><a name="q_3"></a>
+How does the UKI work?
+</h3><p>
+The UKI works by representing itself as a USB device that uses the OS's HID driver. It defines two HID TLCs, one of which is a keyboard, and the other is Undefined - in it's scripted running form, the second collection is unused. It is pretty much just a pretend keyboard that replays scripts that you store on it's EEPROM. Any HID device or OS should be able to use it's input.
+</p><h3><a name="q_4"></a>
+How is the UKI used?
+</h3><p>
+Once it's assembled, you take the control program and compile scripts for it to process. Then you upload the scripts to the UKI's EEPROM storage. The next time you plug it in, after a short delay, it starts running the scripts.
+</p><h3><a name="q_5"></a>
+What is UKIControl?
+</h3><p>
+UKIControl is the name of the programs used to compile scripts and upload them to the device. It also works as a controller for some of the functions of the device itself while it's operating.
+</p><h3><a name="q_6"></a>
+How do I write a script?
+</h3><p>
+An example using the Windows version:<br>
+First you need to decide what you script is going to do. In this case, it's going to open a command prompt and type ipconfig, wait, then close and stop.<br>
+Open the UKI control program. For simplicity sake we will use the base EEPROM, which the program will default to using if it's not set to do otherwise. Since there is normally a delay before the OS's HID driver picks up the device, we will code in a delay. Type 15 in the input box at the bottom of the UKI Control program, then hit Append Seconds Delay. Then we need to hit the GUI (Windows) key on the keyboard - type 08 and hit Set Modifiers. You can hit Set Modifiers with no arguments to get a list of the usable modifiers, if you want. Then type 'r' (with no quotes) into the input box and hit Convert and Append to mem. Now the keyboard thinks the GUI and 'r' keys are being held down. So we need to tell it to release them, so input 0 below and set modifiers again. Then hit Append Null. Sending a null scancode tells the keyboard that no keys (other than modifier keys) are being held down. Now there is nothing being held down and Windows will open the "Run" dialog. Here is an example of where we need to be careful - if you type anything too fast, before the window is opened, then the input box will not receive the correct input as the box isn't open to acept text yet. So hit 1QDelay to add in roughly 1/4 a second delay for the window to open. You could also add more too, depending on the speed of the system you are running it on. After the delay, the box should be open and ready for input. Enter 'cmd' and a return then convert and append again. Now we need to wait for the command prompt to open up - this may take longer than the box opening up, so either hit 1QDelay a few times, or enter 1 and hit seconds delay to give the box time to open up. Now the box should be open, so type 'ipconfig' and a return into the input box and hit convert and append again. Now the ipconfig info should be displayed in the command prompt, so we want to wait a few seconds so it's readable - enter 15 into the input box and hit seconds delay. Then type 'exit' and a return and convert and append. Now the script is done - so hit Append Finish which will tell the script processor to stop processing. Now the script is complete, and it can be saved using the file menu, if you want.<br>
+In the UKI Control program, next you use the respective button to connect. You will need to know the VID/PID in order to access it, and may need greater than normal User access in order to access the device on your system. If you try to connect without the boxes being filled out, it will scan the available devices. The default VID/PID pair is one of the free ones from vUSB for use as an HID keyboard. See their documentation for more information. They are VID 16C0 and PID 27DB which should be the default in the input boxes. Once you hit connect, it should display a message indicating you are connected. Hit Upload UKI EEPROM and it will push the script data into the device's EEPROM. Once it's loaded, the next time it's plugged in it will start executing the script commands. Or you can manually turn it on using the "Enable Run" button. In this case, hit Disconnect then unplug the device. Once it's disconnected, wait a few seconds and plug it in. Then watch as the device starts executing the scripted commands.
+</p><h3><a name="q_7"></a>
+Why did you make this?
+</h3><p>
+Because it's something that people will benifit from having in a way that is easy for anyone to make (without the aid of a reflow oven) and can be utilized easily and effectively. Plus once you are used to it, it's simple to upload scripts without hardcoding new data into firmware on a development device. Also, the configuration of the device allows for other uses besides the current configuration - so having something that is easy to make and has many potential uses is an added advantage. Hopefully many more fun and useful projects will spawn off of it. And with the convenient small size of it, it can be very compact - even more so if the schematic is converted to all SMD components.
+</p><h3><a name="q_8"></a>
+Why do you sell the parts?
+</h3><p>
+I sell the parts for a few reasons. Some people would love to try this, but don't want to learn all the steps in between in order to get it working, some people know how to do it but don't have time to etch board and program processors, and some want to start learning how and don't want something everything done for them. Some people just want a "way in" to programming the AVR line directly rather than using one of the premade board options - or an educational option that you know any student will get a kick out of completing, useful and fun with many real-world applications. Selling the parts makes it easy for most people to put the boards together - all you need is a soldering iron and some solder, and you can have a working device.<br>
+Also, the profits from sales allow me to work on some of the many other projects that I want to release as open-source projects. The more I sell, the more time and resources I can allocate to working on new projects or upgrading existing ones.
+</p><h3><a name="q_9"></a>
+Do I need to purchase the parts from you?
+</h3><p>
+Nope! Everything can be purchased from one of the major electronics suppliers - you will have to etch and drill your own board and program the processor yourself however. There is space on the board for a programming header in the current design, although not supplied with the kit, since the processor is already programmed. The header is also needed for firmware upgrades or alterations. And many of the passive components can be substituted with something close, so using your own parts or parts you have pulled from other devices works great too!<br>
+I just try to make it easy, in a way that benefits everyone involved - if you get it from me, you can assemble it soon as it gets to you for only a little more than the buying everything needed to assemble it from scratch. And if you already have most of the other parts, you can get just the processor or board alone for much less. For the price of a few cups of coffee, you can save the hassle of etching and drilling and have a board that is not only etched and drilled but also has silkscreened component locations and a solder mask for easy soldering. I do not currently sell enclosures for the device, but since they fit in many different types of thumb-drive size cases or other containers, you should be able to recycle or improvise something interesting for it!
+</p><h3><a name="q_10"></a>
+I have put it together but it doesn't work!
+</h3><p>
+Please recheck the values on the schematic and verify that everything is on the board correctly and oriented properly. If you etched the board yourself, check for stray connections between lines where the copper didn't etch all the way. Check for solder bridges between pins or lines. Make sure there are no breaks in the lines, or pins that are not soldered down all the way. Although it is possible that component damage can happen, I have been quite brutal to some of my own UKI devices here in testing and have yet to have one that failed to work, so they are pretty resilient.
+</p><h3><a name="q_11"></a>
+I cannot connect to the device!
+</h3><p>
+First check below, if you have programmed in a disconnect as the initial UKI action. Otherwise, most operating systems will give some sort of diagnostic when a connected device fails for some reason. If nothing at all happens, then there is some sort of USB connection problem or and electrical problem. If the OS alerts you that an attached device is not functioning, then it's possible there is an electrical problem, or the processor is not able to respond to the OS due to bad firmware programming or improper assembly. (Processors I supply are tested for functionality before sending, so they are tested good before assembly.) If you still cannot connect, check that you are using the correct VID/PID if you recompiled the firmware to change anything. If that fails, connect a USB power only cable to the device and check processor communication via the programming header and a programmer and verify the firmware image.
+</p><h3><a name="q_12"></a>
+EEPROM upload fails!
+</h3><p>
+If you have selected the external EEPROM and do not have a chip installed, the upload may fail. Normally, however, you will not be able to select an external EEPROM if the processor cannot initiate successful communication with it during boot up.
+</p><h3><a name="q_13"></a>
+Nothing happens when I try to run scripts!
+</h3><p>
+Please reread the instructions on script generation, verify it's uploaded to the EEPROM location you want to use, and check that you have the proper start address set in base EEPROM (for external EEPROM start) or a -1 start address set in the base EEPROM for the internal EEPROM start. Make sure there are no script stops or repeats at the start of the script.
+</p><h3><a name="q_14"></a>
+I programmed a disconnect as the first script command and now I can't connect to the device to reprogram it!
+</h3><p>
+The device stays connected for several seconds after it boots up, before it starts processing. This should allow plenty of time on most systems for you to use the controller to "disable" the UKI script running which will stop it from disconnecting, which you can then use to reprogram it again.
+</p><h3><a name="q_15"></a>
+Why should I use disconnects and connects?
+</h3><p>
+One reason is that some hardware and/or OSes will fail to recognize the UKI if it's present during the boot process. Since it is not fully compliant with all standards, it will sometimes also generate an alarm on boot, but I have yet to see one that halts bootup. Disconnecting helps to keep the device isolated during boot until the OS is able to receive keystrokes. It also helps to avoid notifications that may display at inopportune times during boot or after startup. Also, it helps hide the device once the script is finished processing - you can set it to disconnect at the end of processing and it will not be available for access or interrogation, for someone looking for it. As well, in linux, you can use it to program the device, then when you start processing it can disconnect and reconnect to reattach to the HID keyboard input driver.
+</p><h3><a name="q_16"></a>
+How do I encode files for transfer?
+</h3><p>
+The UKI can take binary data and store it, then replay it as string-escaped hex, variable definition hex or raw hex, for use in javascript, C, or anything that takes hex data in one of those formats - to pass data into programs for saving executables, or config files or anything else you would like. In order to use it, set up any prefix code in the control program, then use the program's encode file option. It will store the data in a way that, when it replays, will show up as hex that is escaped for use in strings. Then add the scripting for the end section. See the example files for code to use for saving the string data to disk as binary data, on different platforms.
+</p><h3><a name="q_17"></a>
+Can you run binary data from it?
+</h3><p>
+As it's just a pseudo-keyboard, it can only run existing files, or upload code to save as binary data. However, once you have uploaded data, if it's executable, you can run it.<br>
+Included in the sample scripts is a sample binary upload of an encoded copy of a metasploit bindshell (port 4444) for x86 windows, along with an assembly (MASM) copy of a tiny shellcode launcher that executes raw shellcode saved to the single resource of the executable. The executable itself is only about 1k so it leaves plenty of shellcode space. Or you can use the msfencode "exe-small" to make executables as well, although they often end up a bit larger. It should run on most Windows (XP and later) systems - it opens the command prompt, saves the javascript uploader and payload to the desktop, generates the binary with cscript, deletes the javascript file then runs the bindshell containing executable and moves the active exe to the user directory. It would be just as easy to write a custom exe to include with it, but keep in mind that the larger the executable, the more time it takes to write out - keyboard interfaces are not the fastest transfer medium.<br>
+For an example of saving and executing the sample bindshell shellcode, load the "Notepad_JScript_filesave_shellfull.uki" compiled script to the device in external EEPROM, then set the "start address" in base EEPROM to 0.
+</p><h3><a name="q_18"></a>
+Why don't the UKI Control programs have the same capabilities?
+</h3><p>
+Because each one was written individually by me, as a way for immediate use of the device and for a starting point for other open-source software, and I decided that any features missing from any of the versions could be ported easily enough by someone who wanted to use said features on the other version. Of course, if you want me to add in specific features to any of the versions, just send messages to the contact address and I will get them added in as time and functionality allow.
+</p><h3><a name="q_19"></a>
+Why would I change the VID/PID pair, Serial or other ID info in the firmware?
+</h3><p>
+It would likely be wise to change any of that if you were in a situation where you wanted to use the device in a way where the residue would not be easily identifiable in a forensic analysis. Remember that each device plugged into common OSes will leave traces of the device being present - a good forensic guy will notice it in a system analysis.<br>
+Also, using the device for spoofing hardware for exploiting USB drivers is another possibility - if you define a VID/PID and serial combination that gets a kernel driver loaded which has flaws in how it processes data coming from the device, you can use that for a direct line into the kernel. Or for a HID, a direct line into the application that is using the user-mode features. Of course, it's highly targeted if you are using anything that isn't an OS built in driver. However, since so many drivers are now automatically loaded soon as a device is seen, and because the low percentage of fuzzing and in-depth testing done on a lot of attachable device input, there are potentially many possibilities for exploitation. Especially when working with drivers written by anyone not familiar with data security. The drivers may be perfect 100% of the time with the correct device, but can be disaterous with a malicious device. I do not have firmware ready for this use yet, but I do have test code in the works for it.
+</p><h3><a name="q_20"></a>
+How does it connect to a computer?
+</h3><p>
+The normal ways are: The USB A plug on the end of the board, like a thumb drive; A USB cable soldered in place of the plug; Wires with alligator clips in place of the wire.<br>
+This allows you to place it like a thumb drive, or plug it in along side a jumble of other cables and have the device itself hidden. Or, with some alligator clips, you can splice into an existing line and clip onto the wires directly at an intermediate point. If you do this, the D+ and D- that go to the device on the hijacked line must be detatched for proper communication. Of course, <u>this does mean that any exposed USB cable that you have physical access to could potentially be used for key injection.</u>
+</p><h3><a name="q_21"></a>
+How do I power the chip to program the firmware with the 6-pin header?
+</h3><p>
+If you are using a programmer that supplies power via the ISP connection, then all you need to do is plug it in while the device is not connected to the USB port. If you are using a programmer that does not supply power, you need to supply 5V to the USB input but the USB data lines cannot be connected since they are connected to the same lines as the programming header needs for data transfer. The easiest way to do this is to take a USB extension cable and make a small slit down one side, cut a section out of each of the D+ and D- wires (which should be color coded if the cable is made correctly) so they no longer make a connection, then tape or melt the slit back together. Then you use the modified cable for connecting to the UKI during ISP programming.
+</p><h3><a name="q_22"></a>
+How do I store data to the external EEPROM?
+</h3><p>
+First, in order to access the external EEPROM, you need to set the External EEPROM page to something other than -1. This allows you access to other pages of EEPROM - in the current version there is only one default external page (0) but it leaves the functionality open for the possibility of other pages. So setting it to anything other than -1 will access page 0 and setting the page to -1 will access internal EEPROM. The default chips use 512 internal EEPROM and 64k external EEPROM. The first 6 bytes of memory in internal EEPROM are reserved for configuration, which is why they are normally reserved when writing scripts for internal memory. The first 3 bytes of internal memory are used for setting the code start point in external memory, the start address and page. Setting the "Ext Start Addr" button on the windows client will set the address you enter into the first 3 bytes of the device if attached. Normally to start at the beginning of the EEPROM, it's easiest to just enter 0. Once that is done, the device will automatically use external memory for code - the control program should automatically select external memory as well when the device is connected if using external memory.
+</p><h3><a name="q_23"></a>
+Do you have any tips for soldering?
+</h3><p>
+Solder the processor and EEPROM in last, as they are the most likely to sustain damage from excessive heat - they have many more pins to solder, so make sure to give them time in between pins to cool some. Soldering in the USB connector first helps as it gives something stable to connect a clamp to (don't clamp too hard!) or hold on to. Solder the resistors which have pads connected to the processor only once the processor is in place, so if the solder flows over the other hole, you won't have to desolder it to get the processor in. Plus, you can solder both the resistor lead and pin at one time if both are in place. Also, remember it is normaly easier to heat the component's lead and melt the solder against the joint of the board and the lead - using the soldering iron to melt the solder directly makes for harder soldering. Keep in mind that using too much solder will cause it to fall through easily on the premade boards - they are through-hole plated so the solder has an easy channel to fill, but also can travel through easily, so use just enough to fill the gap plus a little on the pad.
+</p><h3><a name="q_other"></a>
+I have other questions!
+</h3><p>
+Send email to the contact address and I will try to answer them as time allows. Sometimes I am very busy, so I cannot always respond immediately - check the FAQ after some time as answers to common questions will be posted here.
+</p><h3><a name="q_thanks"></a>
+Thanks/Credit
+</h3><p>
+Thanks goes to lut3r for his support and ideas, <a href="http://www.irongeek.com/" target="External">Adrian Crenshaw of Irongeek</a> as several of his ideas were incorporated into the device, <a href="http://www.ladyada.net/" target="External">ladyada</a> of <a href="http://www.adafruit.com/" target="External">Adafruit Industries (www.adafruit.com)</a> for the idea to start making open-source stuff for others, <a href="http://www.obdev.at/" target="External">Objective Development Software GmbH</a> for their excellent open-source USB driver for the AVRs and <a href="http://www.metasploit.com/">The Metasploit Project</a> for their great framework.
+</p><p>
+</p><br>
+
+&copy;2010 NOP Security<br>
+</body>
+</html>
